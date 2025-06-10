@@ -41,5 +41,10 @@ func (u *userRepository) SaveProfileImage(ctx context.Context, bucketName string
 	return nil
 }
 func (u *userRepository) RemoveProfileImage(ctx context.Context, bucketName string, objectPath string) error {
-	panic("unimplemented")
+	err := u.miniio.Delete(ctx, bucketName, objectPath)
+	if err != nil {
+		u.logger.Error().Err(err).Str("imagePath", objectPath).Msg("failed to remove profile image")
+		return status.Error(codes.Internal, dto.Err_INTERNAL_REMOVE_PROFILE_IMAGE.Error())
+	}
+	return nil
 }

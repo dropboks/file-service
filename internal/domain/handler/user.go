@@ -24,6 +24,16 @@ func RegisterUserService(grpc *grpc.Server, userService service.UserService) {
 	fpb.RegisterFileServiceServer(grpc, grpcHandler)
 }
 
+func (u *UserGrpcHandler) SaveProfileImage(ctx context.Context, imageByte *fpb.Image) (*fpb.ImageName, error) {
+	imageName, err := u.userService.SaveProfileImage(ctx, imageByte.GetImage(), imageByte.GetExt())
+	if err != nil {
+		return nil, err
+	}
+	return &fpb.ImageName{
+		Name: imageName,
+	}, nil
+}
+
 func (u *UserGrpcHandler) RemoveProfileImage(ctx context.Context, imageName *fpb.ImageName) (*fpb.Status, error) {
 	err := u.userService.RemoveProfileImage(ctx, imageName.GetName())
 	if err != nil {
@@ -33,14 +43,5 @@ func (u *UserGrpcHandler) RemoveProfileImage(ctx context.Context, imageName *fpb
 	}
 	return &fpb.Status{
 		Status: true,
-	}, nil
-}
-func (u *UserGrpcHandler) SaveProfileImage(ctx context.Context, imageByte *fpb.Image) (*fpb.ImageName, error) {
-	imageName, err := u.userService.SaveProfileImage(ctx, imageByte.GetImage(), imageByte.GetExt())
-	if err != nil {
-		return nil, err
-	}
-	return &fpb.ImageName{
-		Name: imageName,
 	}, nil
 }
