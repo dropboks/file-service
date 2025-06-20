@@ -4,7 +4,7 @@ const (
 	APP_BUCKET           = "dropboks-bucket"
 	PROFILE_IMAGE_FOLDER = "profile"
 	PUBLIC_PERMISSION    = `{
-  "Version": "2025-06-10",
+  "Version": "2012-10-17",
   "Statement": [
     {
       "Effect": "Allow",
@@ -13,4 +13,5 @@ const (
       "Resource": ["arn:aws:s3:::%s/*"]
     }
   ]
-}`)
+}`
+)
