@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/dropboks/file-service/pkg/constant"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 )
@@ -38,8 +39,12 @@ func loggingUnaryInterceptor(logger zerolog.Logger) grpc.UnaryServerInterceptor 
 }
 
 func NewGRPC(logger zerolog.Logger) *grpc.Server {
+	maxMsgSize := constant.MAX_IMAGE_SIZE_BYTES
+
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(loggingUnaryInterceptor(logger)),
+		grpc.MaxRecvMsgSize(maxMsgSize),
+		grpc.MaxSendMsgSize(maxMsgSize),
 	)
 	return grpcServer
 }
