@@ -9,6 +9,8 @@ import (
 	"image/png"
 	"io"
 	"strings"
+
+	"github.com/nfnt/resize"
 )
 
 func CompressImage(imageBytes []byte, imageExt string) ([]byte, error) {
@@ -17,15 +19,16 @@ func CompressImage(imageBytes []byte, imageExt string) ([]byte, error) {
 		return nil, err
 	}
 
+	maxSize := uint(1024)
+	resizedImg := resize.Thumbnail(maxSize, maxSize, img, resize.Lanczos3)
+
 	buf := new(bytes.Buffer)
 	switch strings.ToLower(imageExt) {
 	case "jpg", "jpeg":
-		// Compress JPEG with quality 75
-		err = jpeg.Encode(buf, img, &jpeg.Options{Quality: 75})
+		err = jpeg.Encode(buf, resizedImg, &jpeg.Options{Quality: 90})
 	case "png":
-		// Compress PNG with DefaultCompression
 		encoder := png.Encoder{CompressionLevel: png.BestCompression}
-		err = encoder.Encode(buf, img)
+		err = encoder.Encode(buf, resizedImg)
 	default:
 		return nil, fmt.Errorf("unsupported image format: %s", imageExt)
 	}
