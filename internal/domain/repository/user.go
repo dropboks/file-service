@@ -6,7 +6,6 @@ import (
 
 	"github.com/dropboks/file-service/internal/domain/dto"
 	"github.com/dropboks/file-service/internal/infrastructure/storage"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,15 +17,13 @@ type (
 		RemoveProfileImage(ctx context.Context, bucketName, objectPath string) error
 	}
 	userRepository struct {
-		pgx    *pgxpool.Pool
 		miniio *storage.MinioStorage
 		logger zerolog.Logger
 	}
 )
 
-func NewUserRepository(pgx *pgxpool.Pool, miniio *storage.MinioStorage, logger zerolog.Logger) UserRepository {
+func NewUserRepository(miniio *storage.MinioStorage, logger zerolog.Logger) UserRepository {
 	return &userRepository{
-		pgx:    pgx,
 		miniio: miniio,
 		logger: logger,
 	}

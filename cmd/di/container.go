@@ -1,7 +1,6 @@
 package di
 
 import (
-	"github.com/dropboks/file-service/config/database"
 	"github.com/dropboks/file-service/config/logger"
 	"github.com/dropboks/file-service/config/router"
 	minioCon "github.com/dropboks/file-service/config/storage"
@@ -16,9 +15,6 @@ func BuildContainer() *dig.Container {
 
 	if err := container.Provide(logger.New); err != nil {
 		panic("Failed to provide logger: " + err.Error())
-	}
-	if err := container.Provide(database.New); err != nil {
-		panic("Failed to provide database: " + err.Error())
 	}
 	if err := container.Provide(minioCon.NewMinioConnection); err != nil {
 		panic("Failed to provide minio Connection: " + err.Error())
