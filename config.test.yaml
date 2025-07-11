@@ -1,10 +1,4 @@
-database:
-  host: "localhost"
-  user: "user_test"
-  password: "password_test"
-  port: "5432"
-  name: "testdb"
-  sslmode: "disable"
+
 
 minio:
   host: "minio"
@@ -13,9 +7,11 @@ minio:
     user: "user_test"
     password: "password_test"
 
+
 app:
   name: "test_app_name"
-  port: 50052
+  grpc:
+    port: 50051
 
 server:
   cors:
