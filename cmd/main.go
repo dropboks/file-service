@@ -1,6 +1,11 @@
 package main
 
 import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/dropboks/file-service/cmd/bootstrap"
 	"github.com/dropboks/file-service/cmd/server"
 	"github.com/spf13/viper"
@@ -8,12 +13,29 @@ import (
 
 func main() {
 	container := bootstrap.Run()
-	serverReady := make(chan bool)
-	grpcServer := server.GRPCServer{
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	grpcServerReady := make(chan bool)
+	grpcServerDone := make(chan struct{})
+	grpcServer := &server.GRPCServer{
 		Container:   container,
-		ServerReady: serverReady,
-		Address:     ":" + viper.GetString("app.port"),
+		ServerReady: grpcServerReady,
+		Address:     ":" + viper.GetString("app.grpc.port"),
 	}
-	grpcServer.Run()
-	<-serverReady
+	go func() {
+		grpcServer.Run(ctx)
+		close(grpcServerDone)
+	}()
+	<-grpcServerReady
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGTERM)
+
+	<-sig
+	cancel()
+
+	<-grpcServerDone
+
 }
